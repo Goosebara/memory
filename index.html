@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mr. K&D's 旅途回憶</title>
+  <meta name="theme-color" content="#ffffff">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      background-color: #f7f7f7;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    html {
+      overflow-x: hidden;
+    }
+    
+    /* 櫻花飄落動畫 */
+    .sakura {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #ffd7e6;
+      border-radius: 15px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    
+    @keyframes fall {
+      0% { transform: translate(0, -10%) rotate(0deg); }
+      100% { transform: translate(100px, 100vh) rotate(360deg); }
+    }
+    
+    .banner {
+      background: linear-gradient(135deg, #FF6B6B, #9f4b98);
+      padding: 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow: hidden;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .banner-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+    
+    .mascot-container {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .mascot-image {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    
+    /* 添加點擊動畫關鍵幀 */
+    @keyframes mascotClick {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.8) rotate(10deg); }
+      75% { transform: scale(1.1) rotate(-5deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    
+    /* 懸停效果 */
+    .mascot-image:hover {
+      transform: scale(1.05);
+    }
+    
+    /* 點擊效果 */
+    .mascot-image:active {
+      animation: mascotClick 0.5s ease;
+      filter: brightness(1.1);
+    }
+    
+    /* 添加媒體查詢以保持響應式設計 */
+    @media (max-width: 768px) {
+      .mascot-image {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .mascot-image {
+        width: 60px;
+        height: 60px;
+      }
+    }
+    
+    .title-container {
+      flex-grow: 1;
+      text-align: left;
+      min-width: 0;
+    }
+    
+    .title-container h1 {
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    
+    .title-container p {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.1rem;
+      margin: 0.5rem 0 0;
+      white-space: nowrap;
+    }
+    
+    @media (max-width: 768px) {
+      .banner-content {
+        gap: 1rem;
+      }
+      
+      .mascot-image {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .title-container h1 {
+        font-size: 2rem;
+      }
+      
+      .title-container p {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .banner {
+        padding: 1rem;
+      }
+      
+      .mascot-image {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .title-container h1 {
+        font-size: 1.5rem;
+      }
+      
+      .title-container p {
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* 記憶面板樣式 */
+    .memory-page {
+      padding: 20px;
+      background: #F2F2F7;
+      min-height: calc(100vh - 180px);
+    }
+    
+    .memory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .back-btn {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #666;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .back-btn:hover, .back-btn:active {
+      background: rgba(0,0,0,0.05);
+    }
+    
+    .page-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+    }
+    
+    /* 密碼輸入畫面 */
+    .password-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    
+    .password-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 80%;
+      max-width: 320px;
+      text-align: center;
+    }
+    
+    .password-input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    
+    .password-button {
+      background: linear-gradient(145deg, #FDA7DF, #D980FA);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .error-message {
+      color: #FF6B6B;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    
+    /* 排序控制區 */
+    .sort-controls {
+      padding: 15px 0;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .sort-btn {
+      padding: 8px 16px;
+      border: 1px solid #FDA7DF;
+      background: white;
+      color: #FDA7DF;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .sort-btn:hover {
+      background: #FDA7DF15;
+    }
+    
+    .sort-btn.active {
+      background: #FDA7DF;
+      color: white;
+    }
+    
+    /* 記憶卡片樣式 */
+    .memory-grid {
+      columns: 3;
+      column-gap: 20px;
+    }
+    
+    @media (max-width: 1200px) {
+      .memory-grid {
+        columns: 2;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .memory-grid {
+        columns: 1;
+      }
+    }
+    
+    .memory-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      break-inside: avoid;
+      cursor: pointer;
+      transform: translateZ(0);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .memory-card:hover, .memory-card:active {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    
+    .memory-image {
+      width: 100%;
+      display: block;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    
+    .memory-image:hover {
+      opacity: 0.95;
+    }
+    
+    .memory-content {
+      padding: 15px;
+    }
+    
+    .memory-date {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .memory-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    
+    .memory-link-container {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+      margin-top: 8px;
+    }
+    
+    .memory-link {
+      color: #FDA7DF;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <!-- 頂部橫幅區塊 -->
+  <div class="banner">
+    <div class="banner-content">
+      <div class="mascot-container">
+        <img src="https://hackmd.io/_uploads/SJN8gdFF1g.png" alt="Working Hamster" class="mascot-image">
+      </div>
+      <div class="title-container">
+        <h1>Mr. K&D's</h1>
+        <p>生活．旅程．回憶</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 回憶頁面內容 -->
+  <div class="memory-page">
+    <div class="memory-header">
+      <a href="https://goosebara.github.io/mrkd-life/" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        返回首頁
+      </a>
+      <div class="page-title">旅途回憶</div>
+    </div>
+    
+    <!-- 密碼輸入畫面 -->
+    <div class="password-screen" id="passwordScreen">
+      <div class="password-box">
+        <h2>請輸入密碼</h2>
+        <input 
+          type="password" 
+          id="passwordInput" 
+          class="password-input" 
+          placeholder="請輸入密碼"
+          autocomplete="current-password"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="4"
+        >
+        <button onclick="checkPassword()" class="password-button">解鎖相簿</button>
+        <div id="errorMessage" class="error-message"></div>
+      </div>
+    </div>
+    
+    <!-- 排序控制區，初始隱藏 -->
+    <div class="sort-controls" style="display: none;" id="sortControls">
+      <button class="sort-btn active" onclick="renderMemories('desc')">由新到舊</button>
+      <button class="sort-btn" onclick="renderMemories('asc')">由舊到新</button>
+    </div>
+    
+    <!-- 相簿內容 -->
+    <div class="memory-grid" id="memoryGrid">
+      <!-- 相簿內容將由 JavaScript 動態生成 -->
+    </div>
+  </div>
+
+  <script>
+    // 相簿資料
+    const memories = [
+      {
+        date: 'August 16-17, 2024',
+        title: '柯先生與丹先生@彰化',
+        image: 'https://hackmd.io/_uploads/Skrk5PHVyg.jpg',
+        link: 'https://photos.app.goo.gl/2qaRW8vE5PiVrZJV8'
+      },
+      {
+        date: 'August 24, 2024',
+        title: "Mr. K&D's Dating in downtown Taichung",
+        image: 'https://hackmd.io/_uploads/ByqJ9wBVyl.jpg',
+        link: 'https://photos.app.goo.gl/dCTFCFzbfkBhe1c49'
+      },
+      {
+        date: 'September 7, 2024',
+        title: "Mr. K&D's Dating in Taipei",
+        image: 'https://hackmd.io/_uploads/SksV0vB4Je.jpg',
+        link: 'https://photos.app.goo.gl/2yjtTmoJjgC2kkws8'
+      },
+      {
+        date: 'September 15, 2024',
+        title: 'Mr. K&D in Downtown Chiayi',
+        image: 'https://hackmd.io/_uploads/H1kx9vSEyg.jpg',
+        link: 'https://photos.app.goo.gl/2Z3B5FUCByvoLdKb8'
+      },
+      {
+        date: 'September 28, 2024',
+        title: 'Mr. K&D 鶯歌散步喝茶趣',
+        image: 'https://hackmd.io/_uploads/SJde9PB4yx.jpg',
+        link: 'https://photos.app.goo.gl/dShrVqGme3VX8BZr8'
+      },
+      {
+        date: 'October 5, 2024',
+        title: "Mr. K&D 彰化台中的完美三餐生活",
+        image: 'https://hackmd.io/_uploads/Bk2x9DHVye.jpg',
+        link: 'https://photos.app.goo.gl/q71tZdgD9DSZNf9n6'
+      },
+      {
+        date: 'October 9-10, 2024',
+        title: "Mr. K&D's 國慶府城遊",
+        image: 'https://hackmd.io/_uploads/BJxW9PBVkl.jpg',
+        link: 'https://photos.app.goo.gl/PiRBh43jTk2BNVpb8'
+      },
+      {
+        date: 'October 19-20, 2024',
+        title: "Mr. K&D's 桃園台北知性篇",
+        image: 'https://hackmd.io/_uploads/BJhZcwr4Jl.jpg',
+        link: 'https://photos.app.goo.gl/Xq1LnyGcZgMfSQou9'
+      },
+      {
+        date: 'November 9, 2024',
+        title: "Teresa's 粉絲見面會",
+        image: 'https://hackmd.io/_uploads/HJgGcvSEye.jpg',
+        link: 'https://photos.app.goo.gl/Jxg5tnqgtJiKMQm6A'
+      },
+      {
+        date: 'November 9-10, 2024',
+        title: "Mr. K&D's Romantic Gathering in Taichung",
+        image: 'https://hackmd.io/_uploads/rkQzqPB41l.jpg',
+        link: 'https://photos.app.goo.gl/c2Hb6aWcxPe9XkM26'
+      },
+      {
+        date: 'November 23-24, 2024',
+        title: "Mr. K&D's 高雄臺南遊",
+        image: 'https://hackmd.io/_uploads/BJUG9vHE1g.jpg',
+        link: 'https://photos.app.goo.gl/Psc6W6GVU9toeEWr9'
+      },
+      {
+        date: 'December 7-8, 2024',
+        title: "Mr. K&D's Shopping Discovery",
+        image: 'https://hackmd.io/_uploads/rkKMcPSEyg.jpg',
+        link: 'https://photos.app.goo.gl/4UFa9MuRboPkD5xc7'
+      },
+      {
+        date: 'December 15, 2024',
+        title: "Mr. K&D's Dating at Songshan Cultural and Creative Park",
+        image: 'https://hackmd.io/_uploads/SJeg_ogpE1e.jpg',
+        link: 'https://photos.app.goo.gl/5HyfFHKS2Mvg1Eoh6' 
+      },
+      {
+        date: 'December 20, 2024',
+        title: "Mr. K&D's Yilan Capybara",
+        image: 'https://hackmd.io/_uploads/S1VQj48Bkx.png',
+        link: 'https://photos.app.goo.gl/CvphY9jGcG8HK2b66' 
+      },
+      {
+        date: 'December 31, 2024-2025',
+        title: "Mr.K&D 跨年趣",
+        image: 'https://hackmd.io/_uploads/SkXsjDXIkl.png',
+        link: 'https://photos.app.goo.gl/EULaNXDsA9LKqzxz6' 
+      },
+      {
+        date: 'January 11, 2025',
+        title: " Mr. K&D 桃園市區泡茶趣",
+        image: 'https://hackmd.io/_uploads/BkdYWkfDke.png',
+        link: 'https://photos.app.goo.gl/DME53iaRB3sZGYR46' 
+      },
+      {
+        date: 'January 19, 2025',
+        title: " Mr. K&D 台中國美館&耕讀園泡茶趣",
+        image: 'https://hackmd.io/_uploads/HJm5ymjwkl.png',
+        link: 'https://photos.app.goo.gl/4rv1cLGznKQDs2Zv9' 
+      },
+      {
+        date: 'January 25, 2025',
+        title: "Mr. K&D 桃園深度遊之草莓、奧爾森、大溪",
+        image: 'https://hackmd.io/_uploads/HJvASvE_yl.jpg',
+        link: 'https://photos.app.goo.gl/ptXqwwuANrEnJu6E6' 
+      }, 
+      {
+        date: 'February 9, 2025',
+        title: "Mr.K&D's Pizza & Tea in Taichung",
+        image: 'https://hackmd.io/_uploads/HJTx2yPt1x.png',
+        link: 'https://photos.app.goo.gl/ZqnJCnmUc9wPBdw28' 
+      },
+      {
+        date: 'February 14, 2025',
+        title: "Mr.K&D's 情人節印度料理&九份遊",
+        image: 'https://hackmd.io/_uploads/ry0uIfg9Jl.png',
+        link: 'https://photos.app.goo.gl/9Kd5Jvo3RbEzabNr8' 
+      },
+      {
+        date: 'March 5-10, 2025',
+        title: "Mr.K&D's Love in Tokyo & Sapporo",
+        image: 'https://hackmd.io/_uploads/r1v7aPCjkx.png',
+        link: 'https://sites.google.com/view/loveinjapan-march-2025/%E9%A6%96%E9%A0%81' 
+      },
+      {
+        date: 'May 1-4, 2025',
+        title: "Mr.K&D'勞動節假期趴趴走",
+        image: 'https://lh3.googleusercontent.com/pw/AP1GczPdM_pDN6-MZtDHTrBiXqXiMKeRsNikaC5w_boYkA3xj7zlPnvf4AP3q2K_uE8quGYK--Vk3qbZDpSoR6UDDK_SmuwKNeLOiJxqMpHCX82M1y_rBFEo21rmWw5gGQ0t5Ij8zsDcEy_ca-4hbKmx2rAh=w2862-h1908-s-no',
+        link: 'https://sites.google.com/view/laborsday-kandd-gogogo/%E9%A6%96%E9%A0%81' 
+      }
+    ];
+
+    // 認證狀態
+    const authState = {
+      isAuthenticated: false
+    };
+
+    // 檢查密碼
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === '0915') {
+        authState.isAuthenticated = true;
+        document.getElementById('passwordScreen').style.display = 'none';
+        document.getElementById('sortControls').style.display = 'flex';
+        renderMemories('desc');
+      } else {
+        document.getElementById('errorMessage').textContent = '密碼錯誤';
+        document.getElementById('passwordInput').value = '';
+      }
+    }
+
+    // 添加回車鍵提交密碼
+    document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        checkPassword();
+      }
+    });
+
+    // 渲染記憶卡片
+    function renderMemories(order = 'desc') {
+      if (!authState.isAuthenticated) {
+        return;
+      }
+
+      // 更新排序按鈕狀態
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.sort-btn[onclick*='${order}']`).classList.add('active');
+      
+      const monthMap = {
+        'January': 0, 'February': 1, 'March': 2, 'April': 3,
+        'May': 4, 'June': 5, 'July': 6, 'August': 7,
+        'September': 8, 'October': 9, 'November': 10, 'December': 11
+      };
+      
+      function parseCustomDate(dateStr) {
+        dateStr = dateStr.replace(/-\d{4}$/, '');
+        const parts = dateStr.split(' ');
+        const month = monthMap[parts[0]];
+        const day = parseInt(parts[1].split('-')[0]);
+        const year = parseInt(parts[parts.length - 1]);
+        return new Date(year, month, day);
+      }
+      
+      // 排序記憶
+      const sortedMemories = [...memories].sort((a, b) => {
+        const dateA = parseCustomDate(a.date);
+        const dateB = parseCustomDate(b.date);
+        return order === 'desc' ? dateB - dateA : dateA - dateB;
+      });
+      
+      // 生成 HTML
+      const grid = document.getElementById('memoryGrid');
+      grid.innerHTML = sortedMemories.map(memory => `
+        <div class="memory-card" onclick="window.open('${memory.link}', '_blank')">
+          <img 
+            src="${memory.image}" 
+            alt="${memory.title}" 
+            class="memory-image"
+            onload="this.style.height = 'auto'"
+          >
+          <div class="memory-content">
+            <div class="memory-date">${memory.date}</div>
+            <div class="memory-title">${memory.title}</div>
+            <div class="memory-link-container">
+              <span class="memory-link">
+                查看相簿 →
+              </span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 添加櫻花飄落效果
+    function createSakura() {
+      const sakura = document.createElement('div');
+      sakura.className = 'sakura';
+      
+      const startPositionLeft = Math.random() * window.innerWidth;
+      sakura.style.left = startPositionLeft + 'px';
+      
+      const animationDuration = 5 + Math.random() * 5;
+      sakura.style.animation = `fall ${animationDuration}s linear`;
+      
+      document.body.appendChild(sakura);
+      
+      setTimeout(() => {
+        sakura.remove();
+      }, animationDuration * 1000);
+    }
+
+    // 每300毫秒創建一個櫻花
+    setInterval(createSakura, 300);
+  </script>
+</body>
+</html>
