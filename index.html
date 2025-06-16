@@ -38,9 +38,9 @@
     }
     
     @keyframes fall {
-      0% { transform: translate(0, -10%) rotate(0deg); }
-      100% { transform: translate(100px, 100vh) rotate(360deg); }
-    }
+  0% { transform: translate(0, -10%) rotate(0deg); }
+  100% { transform: translate(0, 100vh) rotate(360deg); }
+}
     
     .banner {
       background: linear-gradient(135deg, #FF6B6B, #9f4b98);
@@ -664,7 +664,7 @@
       const sakura = document.createElement('div');
       sakura.className = 'sakura';
       
-      const startPositionLeft = Math.random() * window.innerWidth;
+      const startPositionLeft = Math.random() * (window.innerWidth - 50);
       sakura.style.left = startPositionLeft + 'px';
       
       const animationDuration = 5 + Math.random() * 5;
